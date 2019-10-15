@@ -7,7 +7,7 @@ from keras import optimizers
 from keras import regularizers
 from keras.utils import plot_model
 from keras.utils import multi_gpu_model
-
+import shelve
 
 set_gpu()
 
@@ -83,13 +83,13 @@ class DLModel:
                 net.update()
                 epoch_data = Tools.get_epoch_data(net)
                 outs_best = self.predict(model_best, epoch_data)
-                outs_best = np.reshape(outs_best, (net.BSs, net.subcarrier))
+                outs_best = np.reshape(outs_best, (net.expectBS, net.subcarrier))
                 outs_best_capacity = net.compute_capacity(
                     outs_best + net.power_subcarrier,
                     net.BS_power + np.sum(outs_best, axis=1)
                 )
                 outs = self.predict(model, epoch_data)
-                outs = np.reshape(outs, (net.BSs, net.subcarrier))
+                outs = np.reshape(outs, (net.expectBS, net.subcarrier))
                 outs_capacity = net.compute_capacity(
                     outs + net.power_subcarrier,
                     net.BS_power + np.sum(outs, axis=1)
@@ -126,7 +126,7 @@ class DLModel:
                 cap[0, i] = net.compute_capacity(net.power_subcarrier, net.BS_power)
                 outs_best = self.predict(model_best, epoch_data)
                 outs_best_capacity = net.compute_capacity(
-                    np.reshape(outs_best + net.power_subcarrier.flatten(), (net.BSs, net.subcarrier)),
+                    np.reshape(outs_best + net.power_subcarrier.flatten(), (net.expectBS, net.subcarrier)),
                     net.BS_power + np.sum(outs_best)
                 )
                 cap[1, i] = outs_best_capacity
@@ -175,6 +175,7 @@ class DLModel:
                 tim.append(int(models[i].split('_')[1]))
             os.remove(Tools.qf_model + '/weights_' + str(np.min(tim)) + '_.h5')
         model.save_weights(Tools.qf_model + '/weights_' + str(int(t.time())) + '_.h5')
+
 
 
     def load_best_model(self):

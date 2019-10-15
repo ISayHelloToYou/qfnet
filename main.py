@@ -80,11 +80,13 @@ def start_net():
     for i in range(5):
         model_name = str(i)
         print('生成第' + model_name + '个model')
-        qlearning.start(model_name, epoch=20, iteration=64, only_q=False)
+        # qlearning.start(model_name, epoch=20, iteration=64, only_q=False)
+        qlearning.start(model_name, epoch=10, iteration=16, only_q=False)
         model = qfnet.build_model()
         x_train, y_train = qfnet.load_data(model_name)
         train_data, _, train_lab, _ = train_test_split(x_train, y_train, test_size=0.2, random_state=36)
-        qfnet.train(model, train_data, train_lab, epoch=20)
+        # qfnet.train(model, train_data, train_lab, epoch=20)
+        qfnet.train(model, train_data, train_lab, epoch=10)
         # qfnet.train(model, x_train, y_train, epoch=50)
         qfnet.evaluate(model, epoch=10)
 
